@@ -1,4 +1,4 @@
-module github.com/Nooooste/azuretls-go
+module github.com/Noooste/azuretls-go
 
 go 1.18
 
