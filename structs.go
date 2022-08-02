@@ -1,4 +1,4 @@
-package main
+package azuretls
 
 type Session struct {
 	id uint64
