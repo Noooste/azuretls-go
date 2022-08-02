@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+//InitApiRemote init api with ip and authorization key
 func InitApiRemote(ip string, key string) bool {
 	if !strings.Contains(ip, "http://") && !strings.Contains(ip, "https://") {
 		ip = "https://" + ip
@@ -34,6 +35,7 @@ func InitApiRemote(ip string, key string) bool {
 	return ping()
 }
 
+//InitSession create a new session on the API and return its struct.
 func InitSession() (*Session, error) {
 	session := &Session{
 		Header:      map[string]string{},

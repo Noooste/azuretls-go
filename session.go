@@ -44,6 +44,7 @@ func (s *Session) SetCookies(cookies []Cookie) bool {
 	}
 }
 
+// Close the current session
 func (s *Session) Close() bool {
 	if result, err := s.caller("/session/close", []byte{}); err != nil {
 		return false
@@ -57,6 +58,7 @@ func (s *Session) Close() bool {
 	}
 }
 
+// KeepAlive asks the API to keep the session up
 func (s *Session) KeepAlive() bool {
 	if result, err := s.caller("/session/keep-alive", []byte{}); err != nil {
 		return false
@@ -70,6 +72,7 @@ func (s *Session) KeepAlive() bool {
 	}
 }
 
+// ApplyJA3 apply your ja3 and its specifications to the current session
 func (s *Session) ApplyJA3(ja3 string, specifications map[string]interface{}) bool {
 	if information, err := json.Marshal(ja3Information{
 		Ja3:            ja3,
@@ -100,6 +103,7 @@ const (
 	MaxHeaderListSize    = "MAX_HEADER_LIST_SIZE"
 )
 
+// ApplyHTTP2Settings apply given HTTP2Settings to the current session (only on http2 requests)
 func (s *Session) ApplyHTTP2Settings(settings []HTTP2Settings) bool {
 	if information, err := json.Marshal(settings); err == nil {
 		if result, err := s.caller("/session/http2/settings", []byte(`{"settings":`+string(information)+`}`)); err != nil {
@@ -117,6 +121,7 @@ func (s *Session) ApplyHTTP2Settings(settings []HTTP2Settings) bool {
 	}
 }
 
+// ApplyWindowsUpdate apply given value to the session's Windows update (only on http2 requests)
 func (s *Session) ApplyWindowsUpdate(value int) bool {
 	if value > 0 && value < 1<<31 {
 		if result, err := s.caller("/session/http2/windows-update", []byte(`{"value":`+strconv.Itoa(value)+`}`)); err != nil {
@@ -134,6 +139,7 @@ func (s *Session) ApplyWindowsUpdate(value int) bool {
 	}
 }
 
+// ApplyStreamPriorities apply given StreamInformation information to the current session (only on http2 requests)
 func (s *Session) ApplyStreamPriorities(streams []StreamInformation) bool {
 	if information, err := json.Marshal(streams); err == nil {
 		if result, err := s.caller("/session/http2/stream-priorities", []byte(`{"streams":`+string(information)+`}`)); err != nil {
@@ -151,6 +157,7 @@ func (s *Session) ApplyStreamPriorities(streams []StreamInformation) bool {
 	}
 }
 
+// Do the given Request.
 func (s *Session) Do(request Request) (*Response, error) {
 	if request.Header == nil {
 		request.Header = s.Header
