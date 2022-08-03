@@ -2,6 +2,8 @@ package azuretls
 
 import "net/http"
 
+type Header map[string]string
+
 type Server struct {
 	client   *http.Client
 	header   http.Header
@@ -12,7 +14,7 @@ type Session struct {
 	id     uint64
 	server *Server
 
-	Header      map[string]string
+	Header      Header
 	PHeader     []string
 	HeaderOrder []string
 
@@ -28,9 +30,9 @@ type Request struct {
 	Url    string `json:"url"`
 	Data   string `json:"data"`
 
-	PHeader     []string          `json:"pheader"`
-	Header      map[string]string `json:"header"`
-	HeaderOrder []string          `json:"header-order"`
+	PHeader     []string `json:"pheader"`
+	Header      Header   `json:"header"`
+	HeaderOrder []string `json:"header-order"`
 
 	Navigator string `json:"navigator"`
 

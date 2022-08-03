@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 )
 
 // GetCookies return cookies from a given domain
@@ -197,4 +198,14 @@ func (s *Session) Do(request Request) (*Response, error) {
 	} else {
 		panic(err)
 	}
+}
+
+func (h Header) Get(key string) string {
+	key = strings.ToLower(key)
+	for hKey, hValue := range h {
+		if key == strings.ToLower(hKey) {
+			return hValue
+		}
+	}
+	return ""
 }
