@@ -12,7 +12,7 @@ import (
 )
 
 //InitApiRemote init api with ip and authorization key
-func InitApiRemote(ip string, key string) bool {
+func InitApiRemote(ip string, key string) *Server {
 	if !strings.Contains(ip, "http://") && !strings.Contains(ip, "https://") {
 		ip = "https://" + ip
 	}
@@ -21,23 +21,33 @@ func InitApiRemote(ip string, key string) bool {
 		ip = ip[:len(ip)-1]
 	}
 
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	server := &Server{
+		client: &http.Client{
+			Timeout: 30 * time.Second, Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		},
+		header: http.Header{},
 	}
 
-	client = &http.Client{Timeout: 30 * time.Second, Transport: tr}
+	server.header.Set("authorization", key)
+	server.header.Set("content-type", "application/json")
 
-	localHeaders.Set("authorization", key)
-	localHeaders.Set("content-type", "application/json")
+	server.endpoint = ip
 
-	localEndpoint = ip
-
-	return ping()
+	if server.Ping() {
+		return server
+	} else {
+		return nil
+	}
 }
 
 //InitSession create a new session on the API and return its struct.
-func InitSession() (*Session, error) {
+func (serv *Server) InitSession() (*Session, error) {
 	session := &Session{
+		server:      serv,
 		Header:      map[string]string{},
 		PHeader:     []string{},
 		HeaderOrder: []string{},
@@ -46,7 +56,7 @@ func InitSession() (*Session, error) {
 		Navigator:   "chrome",
 	}
 
-	var realPath = localEndpoint + "/session/new"
+	var realPath = serv.endpoint + "/session/new"
 
 	request, err := http.NewRequest("POST", realPath, bytes.NewBuffer([]byte{}))
 
@@ -54,9 +64,9 @@ func InitSession() (*Session, error) {
 		return nil, err
 	}
 
-	request.Header = localHeaders
+	request.Header = serv.header
 
-	response, err := client.Do(request)
+	response, err := serv.client.Do(request)
 
 	if err != nil {
 		return nil, err

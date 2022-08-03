@@ -1,7 +1,16 @@
 package azuretls
 
+import "net/http"
+
+type Server struct {
+	client   *http.Client
+	header   http.Header
+	endpoint string
+}
+
 type Session struct {
-	id uint64
+	id     uint64
+	server *Server
 
 	Header      map[string]string
 	PHeader     []string

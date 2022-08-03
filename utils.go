@@ -8,12 +8,8 @@ import (
 	"strconv"
 )
 
-var client *http.Client
-var localEndpoint = ""
-var localHeaders = http.Header{}
-
 func (s *Session) caller(path string, information []byte) (string, error) {
-	var realPath = localEndpoint + path + "?sid=" + strconv.FormatUint(s.id, 10)
+	var realPath = s.server.endpoint + path + "?sid=" + strconv.FormatUint(s.id, 10)
 
 	request, err := http.NewRequest("POST", realPath, bytes.NewBuffer(information))
 
@@ -21,9 +17,9 @@ func (s *Session) caller(path string, information []byte) (string, error) {
 		return "", err
 	}
 
-	request.Header = localHeaders
+	request.Header = s.server.header
 
-	response, err := client.Do(request)
+	response, err := s.server.client.Do(request)
 
 	if err != nil {
 		return "", err
@@ -32,19 +28,15 @@ func (s *Session) caller(path string, information []byte) (string, error) {
 	return getBodyString(response), nil
 }
 
-func ping() bool {
-	if localEndpoint == "" || client == nil || localHeaders == nil {
-		return false
-	}
-
-	request, err := http.NewRequest("POST", localEndpoint, bytes.NewBuffer([]byte{}))
-	request.Header = localHeaders
+func (serv *Server) Ping() bool {
+	request, err := http.NewRequest("POST", serv.endpoint, bytes.NewBuffer([]byte{}))
+	request.Header = serv.header
 
 	if err != nil {
 		return false
 	}
 
-	response, err := client.Do(request)
+	response, err := serv.client.Do(request)
 
 	if err != nil {
 		return false
