@@ -1,6 +1,7 @@
 package azuretls
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -185,6 +186,9 @@ func (s *Session) Do(request Request) (*Response, error) {
 		} else {
 			var response Response
 			if err := json.Unmarshal([]byte(result), &response); err == nil {
+				if response.IsBase64Encoded {
+					response.Content, _ = base64.StdEncoding.DecodeString(response.Text)
+				}
 				return &response, nil
 			} else {
 				var apiErr apiError

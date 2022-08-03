@@ -45,14 +45,17 @@ type Request struct {
 }
 
 type Response struct {
-	StatusCode int `json:"status_code"`
+	StatusCode int `json:"status-code"`
 
 	Cookies map[string]interface{} `json:"cookies"`
 	Url     string                 `json:"url"`
 	Headers Header                 `json:"headers"`
 	Text    string                 `json:"body"`
 
-	ServerPush []Response `json:"server-push"`
+	Content []byte
+
+	IsBase64Encoded bool       `json:"is-base64-encoded"`
+	ServerPush      []Response `json:"server-push"`
 }
 
 type sessionResponse struct {
