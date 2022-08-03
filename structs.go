@@ -49,7 +49,7 @@ type Response struct {
 
 	Cookies map[string]interface{} `json:"cookies"`
 	Url     string                 `json:"url"`
-	Headers map[string]interface{} `json:"headers"`
+	Headers Header                 `json:"headers"`
 	Text    string                 `json:"body"`
 
 	ServerPush []Response `json:"server-push"`
